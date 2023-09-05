@@ -1,0 +1,31 @@
+A URL shortening service
+
+
+Guidlines
+
+- A user inputed link is formatted into a short user-friendly link
+
+- Links are idempotent by full url minus the protocol 
+
+- The link service provides statistics per link
+  - Visited Link count
+  - Rolling Average
+
+Formatting the link
+  - Hashing 
+        Uses nanoid package to generate a shortened link (7 characters)
+         Collision avoidance
+            Service checks each link against the database to prevent duplicate shortening of same Links
+            Service rely on the nanoid default collision resistance
+                This introduces some restrictions: 
+                    - To ensure a less than 1% probability of collision, each instance of the service has to generate
+                    less than 1000 links per second
+
+
+import { customAlphabet } from 'nanoid/async'
+const nanoid = customAlphabet('1234567890abcdef', 10)
+async function createUser() {
+  user.id = await nanoid()
+}
+                        
+

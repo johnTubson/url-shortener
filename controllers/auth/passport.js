@@ -2,7 +2,7 @@ const passport = require("passport");
 const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 const { Strategy: LocalStrategy } = require("passport-local");
 const { User } = require("../../models/model");
-const { createUserOAuth } = require("../user/userController");
+const { createUserOAuth } = require("../auth/authController");
 
 passport.use(
 	new GoogleStrategy(
@@ -17,7 +17,7 @@ passport.use(
 			try {
 				const foundUser = await User.findOne({ email: profile.email });
 				if (!foundUser) return cb(null, createUserOAuth(profile));
-				if (foundUser.auth_type === "local") return cb(null, false, { message: "User registered using natively" });
+				if (foundUser.auth_type === "local") return cb(null, false, { message: "User registered using local authentication" });
 				return cb(null, foundUser);
 			} catch (err) {
 				return cb(err, null);

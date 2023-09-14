@@ -3,13 +3,13 @@ const express = require("express");
 require("express-async-errors");
 const requestUrlMiddleware = require("./utils/requestUrl");
 const session = require("express-session");
-const redirectLink = require("./routes/redirectLinkRoutes");
 const authRoutes = require("./routes/authRoutes");
 const linkRoutes = require("./routes/linkRoutes");
+const staticRoutes = require("./routes/staticRoutes");
 const { centralErrorHandler, error404Handler } = require("./controllers/error/errorController");
 const passport = require("./controllers/auth/passport");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 const app = express();
 
@@ -33,9 +33,9 @@ app.use(
 app.use(passport.session());
 
 // ROUTES
-app.use("/auth", authRoutes);
-app.use("/", redirectLink);
-app.use("/link", linkRoutes);
+app.use("/api/v1/link", linkRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/", staticRoutes);
 
 //ERROR HANDLING
 app.use(error404Handler);

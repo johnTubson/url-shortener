@@ -1,5 +1,5 @@
 const { User, Link } = require("../../models/model");
-const { generateLink, getLinkPath } = require("./linkFunctions");
+const { shortIDgen } = require("./linkGeneration");
 const AppError = require("../../utils/error");
 
 async function createLink(req, res, next) {
@@ -8,9 +8,11 @@ async function createLink(req, res, next) {
 	const result = await Link.findOne({ original_url: url });
 	if (result) return res.status(400).json({ result, message: "Link already shortened" });
 
-	const shortUrl = await generateLink(url);
+	const { short_url, link_id, timestamp } = shortIDgen();
 	const link = new Link({
-		short_url: shortUrl,
+		short_url,
+		link_id,
+		timestamp,
 		original_url: url,
 		user_id: req.user._id,
 	});
@@ -26,14 +28,15 @@ async function userLinks(req, res, next) {
 ///////////// INDIVIDUAL LINKS CONTROL ///////////////////
 
 async function getLink(req, res, next) {
-	const url = req.body.link;
-	const link = await User.findOne({ short_url: url });
+	const link_id = req.params._id;
+	const link = await User.findById(link_id);
 	if (!link) return next(new AppError("Link not found", 404));
 	res.status(200).json(link);
 }
 
+// Todo
 async function patchLink(req, res, next) {
-	const link_id = req.params.id;
+	const link_id = req.params._id;
 	const link = Link.findById(link_id);
 	if (!link) return next(new AppError("Link not found", 400));
 	// request body must have been cleaned
@@ -45,7 +48,7 @@ async function patchLink(req, res, next) {
 }
 
 async function deleteLink(req, res, next) {
-	const link_id = req.params.id;
+	const link_id = req.params._id;
 	const link = Link.findByIdAndDelete(link_id);
 	if (!link) return next(new AppError("Link not found", 400));
 	res.status(201).send("Link deleted successfully");
@@ -54,10 +57,16 @@ async function deleteLink(req, res, next) {
 async function redirectLink(req, res, next) {
 	// domain.com/65788484 -- extract 65788484
 	const path = await getLinkPath(req.requestUrl);
-	const link = await Link.findOneAndUpdate({ short_url: path }, { $inc: { views: 1 } }, { new: true });
-	if (!link) return next(new AppError("Link not found", 404));
+	const link = await Link.findOneAndUpdate({ short_url: path }, { $inc: { views: 1 } });
+	if (!link) return next(new AppError("Link not found", 404)); //Todo: render a static page instead
 
 	res.redirect(301, link.original_url);
 }
 
-module.exports = { createLink, userLinks, getLink, redirectLink, patchLink, deleteLink };
+async function getLinkPath(link) {
+	console.log(link);
+	const url = new URL(link);
+	return url.pathname.split("/")[1];
+}
+
+module.exports = { createLink, userLinks, getLink, redirectLink, deleteLink };

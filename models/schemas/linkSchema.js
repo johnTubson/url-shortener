@@ -16,6 +16,17 @@ const linkSchema = mongoose.Schema({
 		minLength: 1,
 		maxLength: 1024,
 	},
+	link_id: {
+		type: BigInt,
+		required: true,
+		unique: true,
+		minLength: 1,
+		maxLength: 1024,
+	},
+	timestamp: {
+		type: BigInt,
+		required: true,
+	},
 	views: {
 		type: Number,
 		default: 0,

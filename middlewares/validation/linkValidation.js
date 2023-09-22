@@ -15,6 +15,7 @@ class Validator {
 		if (check.includes(false)) throw new Error("Property validator not yet defined");
 
 		this._execute("body", bodyArray);
+		return this;
 	}
 
 	params(paramArray) {
@@ -25,6 +26,7 @@ class Validator {
 		if (check.includes(false)) throw new Error("Property validator not yet defined");
 
 		this._execute("params", paramArray);
+		return this;
 	}
 
 	query(queryArray) {
@@ -35,6 +37,7 @@ class Validator {
 		if (check.includes(false)) throw new Error("Property validator not yet defined");
 
 		this._execute("query", queryArray);
+		return this;
 	}
 
 	_execute(medium, prop) {
@@ -75,10 +78,6 @@ class Validator {
 	}
 
 	exec() {
-		return this.middleware.pop();
-	}
-
-	execArray() {
 		return this.middleware;
 	}
 }

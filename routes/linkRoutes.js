@@ -13,10 +13,10 @@ Router.all("*", protectRoute);
 
 Router.route("/")
 	.get(userLinks)
-	.post(new Validator().body(["link"]), createLink);
+	.post(new Validator().body(["link"]).exec(), createLink);
 
 Router.route("/:_id")
-	.all(new Validator().params(["link_id"]))
+	.all(new Validator().params(["link_id"]).exec())
 	.get(getLink)
 	.delete(deleteLink);
 

@@ -10,7 +10,7 @@ const {
 
 exports.localRegistration = async (req, res, next) => {
 	const object = req.body;
-	const schema = registrationSchema(object);
+	const schema = registrationSchema;
 	try {
 		await schema.validateAsync(object);
 		next();
